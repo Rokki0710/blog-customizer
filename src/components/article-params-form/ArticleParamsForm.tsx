@@ -13,23 +13,17 @@ import {
 	backgroundColors,
 	contentWidthArr,
 	defaultArticleState,
+	ArticleStateType,
 } from 'src/constants/articleProps';
 
 import { useOutsideClickClose } from 'src/ui/select/hooks/useOutsideClickClose';
 
 type ArticleParamsFormProps = {
-	customOptions: (options: {
-		font: string;
-		fontSize: string;
-		fontColor: string;
-		backgroundColor: string;
-		contentWidth: string;
-	}) => void;
-	resetOptions: () => void;
+	setCustomOptions: (options: ArticleStateType) => void;
+	initialState: ArticleStateType;
 };
 
 export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
-	// Состояние для управления видимостью формы параметров
 	const [isOpen, setIsFormOpen] = useState(false);
 	
 	const toggleForm = () => {
@@ -38,7 +32,6 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 	
 	const formRef = useRef<HTMLDivElement>(null);
 	
-	// Хук для закрытия формы при клике вне её области
 	useOutsideClickClose({
 		isOpen: isOpen,
 		onChange: setIsFormOpen,
@@ -46,38 +39,35 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 		rootRef: formRef,
 	});
 	
-	// Состояния для каждого параметра статьи
-	const [font, setFont] = useState(defaultArticleState.fontFamilyOption);
-	const [fontSize, setFontSize] = useState(defaultArticleState.fontSizeOption);
-	const [fontColor, setFontColor] = useState(defaultArticleState.fontColor);
+	const [font, setFont] = useState(props.initialState.fontFamilyOption);
+	const [fontSize, setFontSize] = useState(props.initialState.fontSizeOption);
+	const [fontColor, setFontColor] = useState(props.initialState.fontColor);
 	const [backgroundColor, setBackgroundColor] = useState(
-		defaultArticleState.backgroundColor
+		props.initialState.backgroundColor
 	);
 	const [contentWidth, setContentWidth] = useState(
-		defaultArticleState.contentWidth
+		props.initialState.contentWidth
 	);
 
-	// Сбрасывает все параметры к значениям по умолчанию
-	function reset() {
-		setFont(defaultArticleState.fontFamilyOption);
-		setFontSize(defaultArticleState.fontSizeOption);
-		setFontColor(defaultArticleState.fontColor);
-		setBackgroundColor(defaultArticleState.backgroundColor);
-		setContentWidth(defaultArticleState.contentWidth);
-		props.resetOptions();
-	}
+	const reset = () => {
+		setFont(props.initialState.fontFamilyOption);
+		setFontSize(props.initialState.fontSizeOption);
+		setFontColor(props.initialState.fontColor);
+		setBackgroundColor(props.initialState.backgroundColor);
+		setContentWidth(props.initialState.contentWidth);
+		props.setCustomOptions(props.initialState);
+	};
 
-	// Применяет выбранные параметры и закрывает форму
-	function applyChanges() {
-		props.customOptions({
-			font: font.value,
-			fontSize: fontSize.value,
-			fontColor: fontColor.value,
-			backgroundColor: backgroundColor.value,
-			contentWidth: contentWidth.value,
+	const applyChanges = () => {
+		props.setCustomOptions({
+			fontFamilyOption: font,
+			fontSizeOption: fontSize,
+			fontColor: fontColor,
+			backgroundColor: backgroundColor,
+			contentWidth: contentWidth,
 		});
 		setIsFormOpen(false);
-	}
+	};
 
 	return (
 		<>
